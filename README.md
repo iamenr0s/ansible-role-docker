@@ -15,7 +15,31 @@ run_not_in_container - the variable is used to skip some tasks during molecule t
 
 [https://docs.docker.com/network/links/#updating-the-etchosts-file]
 
-
+```
+# Edition can be one of: 'ce' (Community Edition) or 'ee' (Enterprise Edition).
+docker_prerequisite_packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg-agent
+  - software-properties-common
+  - jq
+docker_edition: 'ce'
+docker_packages:
+  - "docker-{{ docker_edition }}"
+  - "docker-{{ docker_edition }}-cli"
+  - containerd.io
+```
+Docker installation options
+```
+docker_apt_release_channel: stable
+docker_apt_repository: "deb [arch={{ ansible_architecture | replace('x86_64','amd64') | replace ('aarch64','arm64') }}] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} {{ docker_apt_release_channel }}"
+docker_apt_gpg_key: https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg
+```
+Docker users
+```
+docker_users: ['ubuntu']
+```
 
 Dependencies
 ------------
