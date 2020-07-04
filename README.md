@@ -45,7 +45,7 @@ Dependencies
 ------------
 
 ```
-ansible-galaxy install enr0s.ansible_role_bootstrap
+ansible-galaxy install -r requirements.yml
 ```
 
 Example Playbook
