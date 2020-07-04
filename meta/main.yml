@@ -16,4 +16,4 @@ galaxy_info:
     - ansible
     - ubuntu
 dependencies:
-  - enr0s.ansible_role_bootstrap
+  - enr0s.ansible-role-bootstrap
