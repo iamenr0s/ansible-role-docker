@@ -1,36 +1,38 @@
 ---
 # tasks file for ansible-role-docker
-- name: Ensure dependencies are installed.
+- name: Ensure dependencies are installed
   apt:
     name: "{{ docker_prerequisite_packages }}"
     state: present
-- name: Add Docker apt key.
+    update_cache: true
+- name: Add Docker apt key
   apt_key:
     url: "{{ docker_apt_gpg_key }}"
     id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
     state: present
   register: add_repository_key
-- name: Add Docker repository.
+- name: Add Docker repository
   apt_repository:
     repo: "{{ docker_apt_repository }}"
     state: present
     update_cache: true
-- name: Install Docker.
-  package:
+- name: Install Docker
+  apt:
     name: "{{ docker_packages }}"
     state: present
-- name: Ensure Docker is started and enabled at boot.
+    update_cache: true
+- name: Ensure Docker is started and enabled at boot
   systemd:
     name: docker
     state: started
     enabled: true
-- name: Ensure docker users are added to the docker group.
+- name: Ensure docker users are added to the docker group
   user:
     name: "{{ item }}"
     groups: docker
     append: true
   with_items: "{{ docker_users }}"
-- name: Ansible create file with content example
+- name: Create custom daemon.json
   copy:
     dest: /etc/docker/daemon.json
     content: |
@@ -48,3 +50,4 @@
   notify:
     - daemon_reload
     - restart_docker
+  when: run_not_in_container
