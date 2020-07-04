@@ -15,5 +15,4 @@ galaxy_info:
     - playbook
     - ansible
     - ubuntu
-dependencies:
-  - enr0s.ansible-role-bootstrap
+dependencies: []
