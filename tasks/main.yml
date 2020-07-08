@@ -21,11 +21,6 @@
     name: "{{ docker_packages }}"
     state: present
     update_cache: true
-- name: Ensure Docker is started and enabled at boot
-  systemd:
-    name: docker
-    state: started
-    enabled: true
 - name: Ensure docker users are added to the docker group
   user:
     name: "{{ item }}"
@@ -50,4 +45,9 @@
   notify:
     - daemon_reload
     - restart_docker
-  when: run_not_in_container
+#  when: run_not_in_container
+- name: Ensure Docker is started and enabled at boot
+  systemd:
+    name: docker
+    state: started
+    enabled: true
