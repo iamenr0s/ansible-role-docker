@@ -27,6 +27,13 @@
     groups: docker
     append: true
   with_items: "{{ docker_users }}"
+- name: create /etc/docker if it doesn't exist
+  file:
+    path: /etc/docker
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
 - name: Create custom daemon.json
   copy:
     dest: /etc/docker/daemon.json
