@@ -8,18 +8,15 @@ driver:
   name: docker
 platforms:
   - name: bootstrap-ubuntu-focal
-    image: ${MOLECULE_DISTRO:-geerlingguy/docker-ubuntu2004-ansible:latest}
-    #dockerfile: Dockerfile.j2
+    image: ${MOLECULE_DISTRO:-enros/docker-ansible-ubuntu2004:latest}
     command: ${MOLECULE_COMMAND:-/lib/systemd/systemd}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
-        #- /usr/bin/qemu-aarch64-static:/usr/bin/qemu-aarch64-static:ro
     tmpfs:
       - /tmp
       - /run
     privileged: yes
     pre_build_image: yes
-    #service_manager: ${MOLECULE_SERVICE_MANAGER:-systemd}
 provisioner:
   name: ansible
   inventory:
