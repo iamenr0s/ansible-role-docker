@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.com/enr0s/ansible-role-docker.svg?branch=master)](https://travis-ci.com/enr0s/ansible-role-docker)
 ![.github/workflows/molecule.yml](https://github.com/enr0s/ansible-role-docker/workflows/.github/workflows/molecule.yml/badge.svg)
-[![quality](https://img.shields.io/ansible/quality/49594)](https://galaxy.ansible.com/enr0s/ansible-role-docker)
+[![quality](https://img.shields.io/ansible/quality/49709)](https://galaxy.ansible.com/enr0s/ansible_role_docker)
 ![LICENSE](https://img.shields.io/github/license/enr0s/ansible-role-docker)
 
 Ansible Role Docker
