@@ -5,6 +5,7 @@
     name: "{{ docker_prerequisite_packages }}"
     state: present
     update_cache: true
+    force_apt_get: true
 - name: Add Docker apt key
   apt_key:
     url: "{{ docker_apt_gpg_key }}"
