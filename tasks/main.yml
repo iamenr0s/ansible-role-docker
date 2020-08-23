@@ -22,8 +22,11 @@
     name: "{{ docker_packages }}"
     state: present
     update_cache: true
-  notify:
-    - start_docker
+- name: Enable docker service
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
 - name: Ensure docker users are added to the docker group
   user:
     name: "{{ item }}"
