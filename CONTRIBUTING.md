@@ -4,7 +4,7 @@ Thanks for taking the time to contribute to `iamenr0s.ansible_role_docker`!
 
 ## Getting started
 
-1. Fork the repository and create your branch from `master`.
+1. Fork the repository and create your branch from `main`.
 2. Install the development dependencies:
 
    ```bash

@@ -94,7 +94,7 @@ Contributing & Security
 
 CI & Release (maintainers)
 ----------------------------
-A single workflow (`.github/workflows/molecule.yml`) runs lint and the full Molecule distro matrix on pushes to `master`, PRs, and `v*` tags. On `v*` tags, a `release` job publishes to Ansible Galaxy after all tests pass.
+A single workflow (`.github/workflows/molecule.yml`) runs lint and the full Molecule distro matrix on pushes to `main`, PRs, and `v*` tags. On `v*` tags, a `release` job publishes to Ansible Galaxy after all tests pass.
 
 The Galaxy API key lives in the `galaxy` GitHub environment, which only `v*` tags may target. One-time setup:
 
