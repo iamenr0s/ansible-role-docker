@@ -1,38 +1,43 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Report a problem with the role
 title: ''
-labels: ''
+labels: bug
 assignees: ''
-
 ---
 
-**Describe the bug**
+## Describe the bug
+
 A clear and concise description of what the bug is.
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+## To reproduce
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+Playbook / role invocation and any non-default variables:
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+```yaml
+- hosts: all
+  roles:
+    - role: enr0s.ansible_role_docker
+```
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+## Expected behavior
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+What you expected to happen.
 
-**Additional context**
-Add any other context about the problem here.
+## Actual behavior
+
+What actually happened. Include the relevant Ansible output (run with `-v` if possible):
+
+```
+paste output here
+```
+
+## Environment
+
+- Target OS and version (e.g. Debian 12, AlmaLinux 9):
+- Ansible version (`ansible --version`):
+- Role version:
+
+## Additional context
+
+Anything else that might help (custom `docker_*` variables, proxy, air-gapped mirror, etc.).
