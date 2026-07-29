@@ -25,9 +25,7 @@ argument_specs:
         default:
           - apt-transport-https
           - ca-certificates
-          - curl
           - gnupg-agent
-          - software-properties-common
           - jq
       docker_apt_gpg_key:
         description: URL of the Docker apt GPG key (Debian/Ubuntu).
@@ -52,7 +50,6 @@ argument_specs:
         default:
           - dnf-plugins-core
           - ca-certificates
-          - curl
           - jq
       docker_redhat_repo_distro:
         description: Docker repository path segment used for RHEL-family hosts ("fedora" or "centos").
