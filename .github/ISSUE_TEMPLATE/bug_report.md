@@ -17,7 +17,7 @@ Playbook / role invocation and any non-default variables:
 ```yaml
 - hosts: all
   roles:
-    - role: enr0s.ansible_role_docker
+    - role: iamenr0s.ansible_role_docker
 ```
 
 ## Expected behavior

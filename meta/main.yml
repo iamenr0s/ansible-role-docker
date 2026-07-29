@@ -4,9 +4,9 @@ dependencies: []
 
 galaxy_info:
   role_name: ansible_role_docker
-  author: enr0s
+  author: iamenr0s
   description: Installs Docker CE on Debian/Ubuntu and RHEL-family (Fedora/AlmaLinux/RockyLinux) hosts, amd64/arm64.
-  license: Apache-2.0
+  license: MIT
   min_ansible_version: "2.10"
   platforms:
     - name: "EL"

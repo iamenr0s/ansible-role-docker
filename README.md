@@ -1,4 +1,4 @@
-[![Molecule](https://github.com/enr0s/ansible-role-docker/actions/workflows/molecule.yml/badge.svg)](https://github.com/enr0s/ansible-role-docker/actions/workflows/molecule.yml) ![Ansible Role](https://img.shields.io/ansible/role/d/enr0s/ansible_role_docker) [![CodeFactor](https://www.codefactor.io/repository/github/enr0s/ansible-role-docker/badge)](https://www.codefactor.io/repository/github/enr0s/ansible-role-docker)
+[![Molecule](https://github.com/iamenr0s/ansible-role-docker/actions/workflows/molecule.yml/badge.svg)](https://github.com/iamenr0s/ansible-role-docker/actions/workflows/molecule.yml) ![Ansible Role](https://img.shields.io/ansible/role/d/iamenr0s/ansible_role_docker) [![CodeFactor](https://www.codefactor.io/repository/github/iamenr0s/ansible-role-docker/badge)](https://www.codefactor.io/repository/github/iamenr0s/ansible-role-docker)
 
 Ansible Role: Docker
 =====================
@@ -60,7 +60,7 @@ Basic run on supported hosts:
 - hosts: all
   become: true
   roles:
-    - role: enr0s.ansible_role_docker
+    - role: iamenr0s.ansible_role_docker
 ```
 
 Add real users to the `docker` group:
@@ -73,7 +73,7 @@ Add real users to the `docker` group:
       - alice
       - bob
   roles:
-    - role: enr0s.ansible_role_docker
+    - role: iamenr0s.ansible_role_docker
 ```
 
 Running outside a container (enables `overlay2`):
@@ -84,7 +84,7 @@ Running outside a container (enables `overlay2`):
   vars:
     docker_run_not_in_container: true
   roles:
-    - role: enr0s.ansible_role_docker
+    - role: iamenr0s.ansible_role_docker
 ```
 
 Contributing & Security
@@ -100,10 +100,10 @@ The Galaxy API key lives in the `galaxy` GitHub environment, which only `v*` tag
 
 ```bash
 # Galaxy publishing key (environment-scoped, get it from galaxy.ansible.com/ui/token)
-gh secret set GALAXY_API_KEY --env galaxy --repo enr0s/ansible-role-docker
+gh secret set GALAXY_API_KEY --env galaxy --repo iamenr0s/ansible-role-docker
 
 # Code scanning notifications (Slack webhook URL; for Discord append /slack to the webhook URL)
-gh secret set SECURITY_ALERT_WEBHOOK --env galaxy --repo enr0s/ansible-role-docker
+gh secret set SECURITY_ALERT_WEBHOOK --env galaxy --repo iamenr0s/ansible-role-docker
 ```
 
 `.github/workflows/code-scanning-notify.yml` polls the code-scanning API every 6 hours and posts new or updated open alerts to that webhook (GitHub Actions cannot trigger on `code_scanning_alert` directly).
@@ -112,9 +112,9 @@ To release: tag a commit `vX.Y.Z` and push the tag — CI gates the Galaxy publi
 
 License
 -------
-Apache-2.0
+MIT
 
 Author Information
 ------------------
-Author: enr0s
-Galaxy: `enr0s.ansible_role_docker`
+Author: iamenr0s
+Galaxy: `iamenr0s.ansible_role_docker`
