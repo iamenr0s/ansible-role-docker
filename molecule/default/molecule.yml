@@ -1,27 +1,24 @@
 ---
+
+role_name_check: 1
 dependency:
   name: galaxy
-lint: |
-  yamllint .
-  ansible-lint
+  options:
+    ignore-errors: true
 driver:
-  name: docker
+  name: podman
 platforms:
-  - name: bootstrap-ubuntu-focal
-    image: ${MOLECULE_DISTRO:-enros/docker-ansible-ubuntu2004:latest}
-    command: ${MOLECULE_COMMAND:-/lib/systemd/systemd}
+  - name: instance
+    image: "iamenr0s/docker-${MOLECULE_DISTRO:-ubuntu2204}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    tmpfs:
-      - /tmp
-      - /run
-    privileged: yes
-    pre_build_image: yes
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    privileged: true
+    pre_build_image: true
+    extra_opts: ["--cgroupns=host"]
 provisioner:
   name: ansible
-  inventory:
-    group_vars:
-      all:
-        run_not_in_container: False
+  playbooks:
+    converge: ${MOLECULE_PLAYBOOK:-converge.yml}
 verifier:
   name: ansible

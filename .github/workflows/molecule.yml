@@ -1,28 +1,109 @@
-on: push
+---
+
+name: Molecule
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
+    paths-ignore:
+      - '**/*.md'
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v2
+      - name: Check out the codebase.
+        uses: actions/checkout@v5
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v6
         with:
-          path: "${{ github.repository }}"
-      - name: molecule
-        uses: robertdebock/molecule-action@2.3.4
+          python-version: '3.12'
+
+      - name: Install test dependencies.
+        run: pip3 install yamllint
+
+      - name: Lint code.
+        run: |
+          yamllint .
+
+  molecule:
+    name: Molecule
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        distro:
+          - almalinux8
+          - almalinux9
+          - almalinux10
+          - debian12
+          - debian13
+          - fedora42
+          - fedora43
+          - fedora44
+          - rockylinux8
+          - rockylinux9
+          - rockylinux10
+          - ubuntu2204
+          - ubuntu2404
+        include:
+          # EL8 legs ship a managed-node Python 3.6.8, below ansible-core
+          # 2.17's floor (module_utils/_internal uses positional-only
+          # params, Python 3.8+). Pin them to ansible-core 2.16.x and
+          # controller Python 3.12 (ansible-compat refuses ansible-core
+          # < 2.20 on controller Python >= 3.14). Every other distro needs
+          # latest ansible for dnf5/libdnf5 support (Fedora 41+).
+          - distro: almalinux8
+            ansible_pin: "ansible<10"
+            python_version: '3.12'
+          - distro: rockylinux8
+            ansible_pin: "ansible<10"
+            python_version: '3.12'
+
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v5
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v6
         with:
-          command: lint
-  test:
+          python-version: ${{ matrix.python_version || '3.12' }}
+
+      - name: Install test dependencies.
+        run: pip3 install "${{ matrix.ansible_pin || 'ansible' }}" molecule molecule-plugins[docker] docker cryptography
+
+      - name: Run Molecule tests.
+        run: molecule test
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          MOLECULE_DISTRO: ${{ matrix.distro }}
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    environment: galaxy
     needs:
       - lint
-    runs-on: ubuntu-latest
+      - molecule
+    if: startsWith(github.ref, 'refs/tags/v')
     steps:
-      - name: checkout
-        uses: actions/checkout@v2
+      - name: Checkout git repo
+        uses: actions/checkout@v5
         with:
-          path: "${{ github.repository }}"
-      - name: molecule
-        uses: robertdebock/molecule-action@2.3.4
+          submodules: true
+          fetch-depth: 0
+
+      - name: Release on galaxy
+        uses: ansible-actions/ansible-galaxy-action@v1.2.0
         with:
-          image: enros/docker-ansible-ubuntu2004:latest
-          command: test
+          galaxy_api_key: ${{ secrets.GALAXY_API_KEY }}

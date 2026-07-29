@@ -1,10 +1,40 @@
 ---
-# This is an example playbook to execute Ansible tests.
+
 - name: Verify
   hosts: all
-  become: no
-  gather_facts: yes
+  gather_facts: true
+  become: false
 
   tasks:
-    - name: test connection
-      ping:
+    - name: Verify | Gather package facts
+      ansible.builtin.package_facts:
+
+    - name: Verify | Assert docker-ce is installed
+      ansible.builtin.assert:
+        that:
+          - "'docker-ce' in ansible_facts.packages"
+        fail_msg: "docker-ce package was not installed"
+
+    - name: Verify | Gather service facts
+      ansible.builtin.service_facts:
+
+    - name: Verify | Assert the docker service is running and enabled
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.services['docker.service'].state == 'running'
+          - ansible_facts.services['docker.service'].status == 'enabled'
+        fail_msg: "docker.service is not running/enabled: {{ ansible_facts.services['docker.service'] | default('not found') }}"
+
+    - name: Verify | Read daemon.json
+      ansible.builtin.slurp:
+        src: /etc/docker/daemon.json
+      register: __verify_daemon_json
+
+    - name: Verify | Assert daemon.json is valid JSON with the expected keys
+      vars:
+        __daemon_config: "{{ __verify_daemon_json.content | b64decode | from_json }}"
+      ansible.builtin.assert:
+        that:
+          - __daemon_config['log-driver'] == 'json-file'
+          - __daemon_config['log-opts']['max-size'] == '100m'
+        fail_msg: "daemon.json content did not match expectations: {{ __verify_daemon_json.content | b64decode }}"
