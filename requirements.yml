@@ -1,1 +1,4 @@
-- src: enr0s.ansible-role-bootstrap
+---
+# Ansible Collections Requirements
+
+collections: []

@@ -1,72 +1,120 @@
-[![Build Status](https://travis-ci.com/enr0s/ansible-role-docker.svg?branch=master)](https://travis-ci.com/enr0s/ansible-role-docker)
-![.github/workflows/molecule.yml](https://github.com/enr0s/ansible-role-docker/workflows/.github/workflows/molecule.yml/badge.svg)
-[![quality](https://img.shields.io/ansible/quality/49709)](https://galaxy.ansible.com/enr0s/ansible-role-docker)
-![LICENSE](https://img.shields.io/github/license/enr0s/ansible-role-docker)
+[![Molecule](https://github.com/enr0s/ansible-role-docker/actions/workflows/molecule.yml/badge.svg)](https://github.com/enr0s/ansible-role-docker/actions/workflows/molecule.yml) ![Ansible Role](https://img.shields.io/ansible/role/d/enr0s/ansible_role_docker) [![CodeFactor](https://www.codefactor.io/repository/github/enr0s/ansible-role-docker/badge)](https://www.codefactor.io/repository/github/enr0s/ansible-role-docker)
 
-Ansible Role Docker
-=========
+Ansible Role: Docker
+=====================
 
-Install docker on your Raspberry (64 bit architecture).
+This role installs Docker CE on Debian/Ubuntu and RHEL-family (Fedora/AlmaLinux/RockyLinux) hosts, amd64/arm64. It adds the official Docker package repository (apt or dnf, depending on the host), installs the Docker packages, enables the service, adds users to the `docker` group, and templates a custom `daemon.json`.
+
+Features
+--------
+- Adds the official Docker apt or dnf repository, dispatched by `ansible_facts['os_family']`.
+- Installs `docker-ce`, `docker-ce-cli`, and `containerd.io`.
+- Enables and starts the `docker` service.
+- Adds configured users to the `docker` group.
+- Templates `/etc/docker/daemon.json` with a `json-file` log driver and capped log size.
+
+Requirements
+------------
+- Python 3 available on the managed hosts (Ansible modules require Python).
+- `apt` (Debian/Ubuntu) or `dnf` (Fedora/AlmaLinux/RockyLinux) present.
+- Run with privilege escalation on real hosts: `become: true` is recommended.
+
+Supported Platforms
+--------------------
+- AlmaLinux 8, 9, 10
+- RockyLinux 8, 9, 10
+- Fedora 42, 43, 44
+- Debian 12 (bookworm), 13 (trixie)
+- Ubuntu 22.04 (jammy), 24.04 (noble)
+
+Note: `meta/main.yml` lists the same set in Galaxy's own format (numeric versions for EL/Fedora, codenames for Debian/Ubuntu).
 
 Role Variables
 --------------
+Defined in `defaults/main.yml`:
 
-run_not_in_container - the variable is used to skip some tasks during molecule test. For example, the /etc/hosts file is crucial for Docker's linking system and it should only be manipulated manually at the image level, rather than the container level.
-
-[https://docs.docker.com/network/links/#updating-the-etchosts-file]
-
-```
-# Edition can be one of: 'ce' (Community Edition) or 'ee' (Enterprise Edition).
-docker_prerequisite_packages:
-  - apt-transport-https
-  - ca-certificates
-  - curl
-  - gnupg-agent
-  - software-properties-common
-  - jq
-docker_edition: 'ce'
-docker_packages:
-  - "docker-{{ docker_edition }}"
-  - "docker-{{ docker_edition }}-cli"
-  - containerd.io
-```
-Docker installation options
-```
-docker_apt_release_channel: stable
-docker_apt_repository: "deb [arch={{ ansible_architecture | replace('x86_64','amd64') | replace ('aarch64','arm64') }}] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} {{ docker_apt_release_channel }}"
-docker_apt_gpg_key: https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg
-```
-Docker users
-```
-docker_users: ['ubuntu']
-```
+- `docker_edition` (str): Docker edition to install, `ce` or `ee` (default: `ce`).
+- `docker_packages` (list): Docker packages to install (default: `docker-{{ docker_edition }}`, `docker-{{ docker_edition }}-cli`, `containerd.io`).
+- `docker_apt_prerequisite_packages` (list): Prerequisite apt packages installed before adding the Docker repository (Debian/Ubuntu).
+- `docker_apt_gpg_key` (str): URL of the Docker apt GPG key (Debian/Ubuntu).
+- `docker_apt_keyring_path` (str): Path where the Docker apt GPG key is stored (default: `/etc/apt/keyrings/docker.asc`).
+- `docker_apt_release_channel` (str): Docker apt release channel (default: `stable`).
+- `docker_apt_repository` (str): Docker apt repository line (Debian/Ubuntu).
+- `docker_redhat_prerequisite_packages` (list): Prerequisite dnf packages installed before adding the Docker repository (Fedora/AlmaLinux/RockyLinux).
+- `docker_redhat_repo_distro` (str): Docker repository path segment for RHEL-family hosts, `fedora` or `centos` (auto-detected).
+- `docker_redhat_gpg_key` (str): URL of the Docker RPM GPG key (Fedora/AlmaLinux/RockyLinux).
+- `docker_redhat_repo_url` (str): URL of the Docker dnf repository file (Fedora/AlmaLinux/RockyLinux).
+- `docker_users` (list): Users to add to the `docker` group (default: `[]`).
+- `docker_run_not_in_container` (bool): Enables the `overlay2` storage driver in `daemon.json`; only needed when the role runs outside a container (default: `false`).
 
 Dependencies
 ------------
-
-```
-ansible-galaxy install -r requirements.yml
-```
+- Collections: none.
+- Role dependencies: none.
 
 Example Playbook
-----------------
+-----------------
+Basic run on supported hosts:
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+```yaml
+- hosts: all
+  become: true
+  roles:
+    - role: enr0s.ansible_role_docker
+```
 
+Add real users to the `docker` group:
+
+```yaml
+- hosts: all
+  become: true
+  vars:
+    docker_users:
+      - alice
+      - bob
+  roles:
+    - role: enr0s.ansible_role_docker
 ```
-  ---
-  - hosts: all
-    roles:
-      - {role: ansible-role-bootstra, run_not_in_container: True }
+
+Running outside a container (enables `overlay2`):
+
+```yaml
+- hosts: all
+  become: true
+  vars:
+    docker_run_not_in_container: true
+  roles:
+    - role: enr0s.ansible_role_docker
 ```
+
+Contributing & Security
+------------------------
+- Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
+- Report vulnerabilities privately per [SECURITY.md](SECURITY.md); do not open public issues for them.
+
+CI & Release (maintainers)
+----------------------------
+A single workflow (`.github/workflows/molecule.yml`) runs lint and the full Molecule distro matrix on pushes to `master`, PRs, and `v*` tags. On `v*` tags, a `release` job publishes to Ansible Galaxy after all tests pass.
+
+The Galaxy API key lives in the `galaxy` GitHub environment, which only `v*` tags may target. One-time setup:
+
+```bash
+# Galaxy publishing key (environment-scoped, get it from galaxy.ansible.com/ui/token)
+gh secret set GALAXY_API_KEY --env galaxy --repo enr0s/ansible-role-docker
+
+# Code scanning notifications (Slack webhook URL; for Discord append /slack to the webhook URL)
+gh secret set SECURITY_ALERT_WEBHOOK --env galaxy --repo enr0s/ansible-role-docker
+```
+
+`.github/workflows/code-scanning-notify.yml` polls the code-scanning API every 6 hours and posts new or updated open alerts to that webhook (GitHub Actions cannot trigger on `code_scanning_alert` directly).
+
+To release: tag a commit `vX.Y.Z` and push the tag — CI gates the Galaxy publish.
 
 License
 -------
-
 Apache-2.0
-
 
 Author Information
 ------------------
-
-[https://blog.enros.me]
+Author: enr0s
+Galaxy: `enr0s.ansible_role_docker`
