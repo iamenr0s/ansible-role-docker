@@ -1,18 +1,39 @@
-galaxy_info:
-  author: enr0s
-  description: Install docker on your Raspberry (64 bit architecture).
-  license: Apache-2.0
-  min_ansible_version: 2.8
-  platforms:
-  - name: Ubuntu
-    versions:
-      - focal
-      - bionic
-  galaxy_tags:
-    - raspberrypi
-    - arm64
-    - docker
-    - playbook
-    - ansible
-    - ubuntu
+---
+
 dependencies: []
+
+galaxy_info:
+  role_name: ansible_role_docker
+  author: enr0s
+  description: Installs Docker CE on Debian/Ubuntu and RHEL-family (Fedora/AlmaLinux/RockyLinux) hosts, amd64/arm64.
+  license: Apache-2.0
+  min_ansible_version: "2.10"
+  platforms:
+    - name: "EL"
+      versions:
+        - "8"
+        - "9"
+        - "10"
+    - name: "Rocky"
+      versions:
+        - "all"
+    - name: "Fedora"
+      versions:
+        - "42"
+        - "43"
+        - "44"
+    - name: "Debian"
+      versions:
+        - "bookworm"
+        - "trixie"
+    - name: "Ubuntu"
+      versions:
+        - "jammy"
+        - "noble"
+  galaxy_tags:
+    - docker
+    - containers
+    - system
+    - ubuntu
+    - debian
+    - fedora

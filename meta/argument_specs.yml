@@ -1,0 +1,79 @@
+---
+
+argument_specs:
+  main:
+    short_description: >-
+      Installs Docker CE on Debian/Ubuntu and RHEL-family
+      (Fedora/AlmaLinux/RockyLinux) hosts.
+    options:
+      docker_edition:
+        description: "Docker edition to install: 'ce' (Community Edition) or 'ee' (Enterprise Edition)."
+        type: str
+        default: 'ce'
+      docker_packages:
+        description: Docker packages to install.
+        type: list
+        elements: str
+        default:
+          - "docker-{{ docker_edition }}"
+          - "docker-{{ docker_edition }}-cli"
+          - containerd.io
+      docker_apt_prerequisite_packages:
+        description: Prerequisite apt packages installed before adding the Docker repository (Debian/Ubuntu).
+        type: list
+        elements: str
+        default:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg-agent
+          - software-properties-common
+          - jq
+      docker_apt_gpg_key:
+        description: URL of the Docker apt GPG key (Debian/Ubuntu).
+        type: str
+        default: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
+      docker_apt_keyring_path:
+        description: Path where the Docker apt GPG key is stored (Debian/Ubuntu).
+        type: str
+        default: /etc/apt/keyrings/docker.asc
+      docker_apt_release_channel:
+        description: Docker apt release channel (Debian/Ubuntu).
+        type: str
+        default: stable
+      docker_apt_repository:
+        description: Docker apt repository line (Debian/Ubuntu).
+        type: str
+        default: "deb [arch={{ ansible_architecture | replace('x86_64', 'amd64') | replace('aarch64', 'arm64') }} signed-by={{ docker_apt_keyring_path }}] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} {{ docker_apt_release_channel }}"
+      docker_redhat_prerequisite_packages:
+        description: Prerequisite dnf packages installed before adding the Docker repository (Fedora/AlmaLinux/RockyLinux).
+        type: list
+        elements: str
+        default:
+          - dnf-plugins-core
+          - ca-certificates
+          - curl
+          - jq
+      docker_redhat_repo_distro:
+        description: Docker repository path segment used for RHEL-family hosts ("fedora" or "centos").
+        type: str
+        default: "{{ 'fedora' if ansible_facts['distribution'] == 'Fedora' else 'centos' }}"
+      docker_redhat_gpg_key:
+        description: URL of the Docker RPM GPG key (Fedora/AlmaLinux/RockyLinux).
+        type: str
+        default: "https://download.docker.com/linux/{{ docker_redhat_repo_distro }}/gpg"
+      docker_redhat_repo_url:
+        description: URL of the Docker dnf repository file (Fedora/AlmaLinux/RockyLinux).
+        type: str
+        default: "https://download.docker.com/linux/{{ docker_redhat_repo_distro }}/docker-ce.repo"
+      docker_users:
+        description: Users to add to the docker group.
+        type: list
+        elements: str
+        default: []
+      docker_run_not_in_container:
+        description: >-
+          Whether to enable the overlay2 storage driver in daemon.json. Only
+          needed when the role runs outside a container.
+        type: bool
+        default: false

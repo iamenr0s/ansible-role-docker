@@ -1,18 +1,42 @@
 ---
 # defaults file for ansible-role-docker
-docker_prerequisite_packages:
+
+# Edition can be one of: 'ce' (Community Edition) or 'ee' (Enterprise Edition).
+docker_edition: 'ce'
+docker_packages:
+  - "docker-{{ docker_edition }}"
+  - "docker-{{ docker_edition }}-cli"
+  - containerd.io
+
+# Debian/Ubuntu installation options
+docker_apt_prerequisite_packages:
   - apt-transport-https
   - ca-certificates
   - curl
   - gnupg-agent
   - software-properties-common
   - jq
-docker_edition: 'ce'
-docker_packages: 
-  - "docker-{{ docker_edition }}"
-  - "docker-{{ docker_edition }}-cli"
-  - containerd.io
+docker_apt_gpg_key: "https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg"
+docker_apt_keyring_path: /etc/apt/keyrings/docker.asc
 docker_apt_release_channel: stable
-docker_apt_repository: "deb [arch={{ ansible_architecture | replace('x86_64','amd64') | replace ('aarch64','arm64') }}] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} {{ docker_apt_release_channel }}"
-docker_apt_gpg_key: https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg
-docker_users: ['ubuntu']
+docker_apt_repository: "deb [arch={{ ansible_architecture | replace('x86_64', 'amd64') | replace('aarch64', 'arm64') }} signed-by={{ docker_apt_keyring_path }}] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} {{ docker_apt_release_channel }}"
+
+# Fedora/AlmaLinux/RockyLinux installation options
+docker_redhat_prerequisite_packages:
+  - dnf-plugins-core
+  - ca-certificates
+  - curl
+  - jq
+docker_redhat_repo_distro: "{{ 'fedora' if ansible_facts['distribution'] == 'Fedora' else 'centos' }}"
+docker_redhat_gpg_key: "https://download.docker.com/linux/{{ docker_redhat_repo_distro }}/gpg"
+docker_redhat_repo_url: "https://download.docker.com/linux/{{ docker_redhat_repo_distro }}/docker-ce.repo"
+
+# Users to add to the docker group. Empty by default since there's no
+# universally-present account to default to across supported distros.
+docker_users: []
+
+# Whether the daemon.json should enable the overlay2 storage driver. Only
+# needed when the role runs outside a container (e.g. a real host or VM);
+# under Molecule/container test runs, the outer container's storage driver
+# already applies and this should stay false.
+docker_run_not_in_container: false

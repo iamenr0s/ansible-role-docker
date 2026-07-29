@@ -1,14 +1,14 @@
 ---
 # handlers file for ansible-role-docker
-- name: daemon_reload
-  systemd:
-    daemon_reload: yes
-- name: restart_docker
-  systemd:
+- name: Daemon reload
+  ansible.builtin.systemd:
+    daemon_reload: true
+  tags:
+    - docker
+
+- name: Restart docker
+  ansible.builtin.systemd:
     name: docker
     state: restarted
-- name: start_docker
-  systemd:
-    name: docker
-    state: started
-    enabled: yes
+  tags:
+    - docker

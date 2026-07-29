@@ -1,0 +1,36 @@
+---
+# Fedora/AlmaLinux/RockyLinux installation tasks
+- name: Ensure dnf prerequisite packages are installed
+  ansible.builtin.dnf:
+    name: "{{ docker_redhat_prerequisite_packages }}"
+    state: present
+    update_cache: true
+  tags:
+    - docker
+    - packages
+
+- name: Import the Docker RPM GPG key
+  ansible.builtin.rpm_key:
+    key: "{{ docker_redhat_gpg_key }}"
+    state: present
+  tags:
+    - docker
+    - repository
+
+- name: Download the Docker dnf repository file
+  ansible.builtin.get_url:
+    url: "{{ docker_redhat_repo_url }}"
+    dest: /etc/yum.repos.d/docker-ce.repo
+    mode: '0644'
+  tags:
+    - docker
+    - repository
+
+- name: Install Docker packages
+  ansible.builtin.dnf:
+    name: "{{ docker_packages }}"
+    state: present
+    update_cache: true
+  tags:
+    - docker
+    - packages

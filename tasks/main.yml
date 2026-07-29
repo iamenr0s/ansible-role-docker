@@ -1,45 +1,40 @@
 ---
 # tasks file for ansible-role-docker
-- name: Ensure dependencies are installed
-  apt:
-    name: "{{ docker_prerequisite_packages }}"
-    state: present
-    update_cache: true
-    force_apt_get: true
-- name: Add Docker apt key
-  apt_key:
-    url: "{{ docker_apt_gpg_key }}"
-    id: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
-    state: present
-  register: add_repository_key
-- name: Add Docker repository
-  apt_repository:
-    repo: "{{ docker_apt_repository }}"
-    state: present
-    update_cache: true
-- name: Install Docker
-  apt:
-    name: "{{ docker_packages }}"
-    state: present
-    update_cache: true
-- name: Enable docker service
-  systemd:
+- name: Include distribution-specific installation tasks
+  ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] | lower }}.yml"
+  tags:
+    - docker
+    - install
+
+- name: Enable and start docker service
+  ansible.builtin.systemd:
     name: docker
     state: started
-    enabled: yes
+    enabled: true
+  tags:
+    - docker
+    - service
+
 - name: Ensure docker users are added to the docker group
-  user:
+  ansible.builtin.user:
     name: "{{ item }}"
     groups: docker
     append: true
-  with_items: "{{ docker_users }}"
+  loop: "{{ docker_users }}"
+  tags:
+    - docker
+    - users
+
 - name: Create custom daemon.json
-  template:
-    dest: /etc/docker/daemon.json
+  ansible.builtin.template:
     src: daemon_json.j2
-    mode: 0644
+    dest: /etc/docker/daemon.json
+    mode: '0644'
     owner: root
     group: root
   notify:
-    - daemon_reload
-    - restart_docker
+    - Daemon reload
+    - Restart docker
+  tags:
+    - docker
+    - config
