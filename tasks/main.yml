@@ -6,6 +6,20 @@
     - docker
     - install
 
+- name: Create custom daemon.json
+  ansible.builtin.template:
+    src: daemon_json.j2
+    dest: /etc/docker/daemon.json
+    mode: '0644'
+    owner: root
+    group: root
+  notify:
+    - Daemon reload
+    - Restart docker
+  tags:
+    - docker
+    - config
+
 - name: Enable and start docker service
   ansible.builtin.systemd:
     name: docker
@@ -24,17 +38,3 @@
   tags:
     - docker
     - users
-
-- name: Create custom daemon.json
-  ansible.builtin.template:
-    src: daemon_json.j2
-    dest: /etc/docker/daemon.json
-    mode: '0644'
-    owner: root
-    group: root
-  notify:
-    - Daemon reload
-    - Restart docker
-  tags:
-    - docker
-    - config

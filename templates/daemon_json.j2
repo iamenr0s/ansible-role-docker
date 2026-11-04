@@ -5,5 +5,7 @@
         "max-size": "100m"
     }{% if docker_run_not_in_container %},
     "storage-driver": "overlay2"
+{% else %},
+    "iptables": false
 {% endif %}
 }
